@@ -24,11 +24,6 @@
  (fn [db]
    (reaction (:search-input @db))))
 
-(re-frame/register-sub        ;; a new subscription handler
- :phones             ;; usage (subscribe [:phones])
- (fn [db]
-   (reaction (:phones @db))))  ;; pulls out :phones
-
 (re-frame/register-sub
  :selected-image-url
  (fn
@@ -53,11 +48,6 @@
  :order-prop
  (fn [db]
    (reaction (:order-prop @db))))
-
-(re-frame/register-sub
- :phone-details
- (fn [db]
-   (reaction (:phone-details @db))))
 
 (re-frame/register-sub
  :phone-query
@@ -104,20 +94,6 @@
    app-state))
 
 (re-frame/register-handler
- :process-phone-detail-response
- (fn
-   ;; store info for the specific phone-id in the db
-   [app-state [_ phone-id response]]
-   (assoc-in app-state [:phone-details (keyword phone-id)] response)))
-
-(re-frame/register-handler
- :process-phone-detail-bad-response
- (fn
-   [app-state [_ phone-id response]]
-   (println "Error getting phone detail for id: " phone-id)
-   app-state))
-
-(re-frame/register-handler
  :load-phone-detail
  (fn
    ;; fetch information for the phone with the given phone-id
@@ -142,18 +118,6 @@
    [app-state [_ [phone-id response]]]
    (println "Error getting phone detail for id: " phone-id)
    (println response)
-   app-state))
-
-(re-frame/register-handler
- :load-phone-detail
- (fn
-   ;; fetch information for the phone with the given phone-id
-   [app-state [_ phone-id]]
-   (ajax/GET (str "phones/" phone-id ".json")
-             {:handler #(re-frame/dispatch [:process-phone-detail-response phone-id %1])
-              :error-handler #(re-frame/dispatch [:process-phone-detail-bad-response phone-id %1])
-              :response-format :json
-              :keywords? true})
    app-state))
 
 (re-frame/register-handler
